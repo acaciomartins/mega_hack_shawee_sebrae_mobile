@@ -1,16 +1,50 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TouchableOpacity, Text, KeyboardAvoidingView, StyleSheet, ScrollView, Image, View } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { TextInputMask } from 'react-native-masked-text';
+import api from '../services/api';
 
 export default function Negocio() {
     const [quantidade, setQuantidade] = useState();
-    const [valor, setValor] = useState();
+
+    const [vendedor, setVendedor] = useState([{ nome: 'Acacio' }]);
+
+    const [preco, setPreco] = useState(0);
+
+    const [nomeProduto, setNomeProduto] = useState();
+    const [descricaoProduto, setDescricaoPreco] = useState();
+
+    const [vendas, setVendas] = useState();
+    const [venda, setVenda] = useState();
+
+    const dadosVenda = {};
+
     const placeholder = {
         label: 'Selecione um produto',
         value: null,
         color: '#9EA0A4',
     };
+
+    useEffect(() => {
+        const v = { ...venda, preco, quantidade }
+        setVendas([v]);
+    }, [preco, venda, quantidade])
+
+    async function salvarDadosVendedor() {
+        const body = {
+            vendedor,
+            vendas
+        }
+        alert(JSON.stringify(body))
+        // const response = await api.post('/vendedor', body);
+    }
+
+    function populaVendas(value, index) {
+        setVenda({
+            nome: index,
+            descricao: value,
+        });
+    }
 
     return (
         <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={78}>
@@ -28,7 +62,7 @@ export default function Negocio() {
             </Text>
                 <View style={styles.input}>
                     <RNPickerSelect
-                        onValueChange={(value) => console.log(value)}
+                        onValueChange={populaVendas}
                         placeholder={placeholder}
                         style={{
                             iconContainer: {
@@ -37,9 +71,9 @@ export default function Negocio() {
                             },
                         }}
                         items={[
-                            { label: 'Produto 1', value: 'Produto 1' },
-                            { label: 'Produto 2', value: 'Produto 2' },
-                            { label: 'Produto 3', value: 'Produto 3' },
+                            { label: 'Produto 1', value: 'Descrição Produto 1' },
+                            { label: 'Produto 2', value: 'Descrição Produto 2' },
+                            { label: 'Produto 3', value: 'Descrição Produto 3' },
                         ]}
                     />
                 </View>
@@ -61,10 +95,10 @@ export default function Negocio() {
                         suffixUnit: ''
                     }}
                     style={styles.input}
-                    value={valor}
-                    onChangeText={setValor}
+                    value={preco}
+                    onChangeText={setPreco}
                 />
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={salvarDadosVendedor}>
                     <Text style={styles.buttonText}>Adicionar</Text>
                 </TouchableOpacity>
             </ScrollView>
