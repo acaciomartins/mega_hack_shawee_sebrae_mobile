@@ -30,7 +30,7 @@ const Routes = createAppContainer(
         Financeiro: {
             screen: Financeiro,
             navigationOptions: {
-                title: 'Financeiro'
+                title: 'Conteúdo SEBRAE'
             }
         },
         SebraeWebView: {
