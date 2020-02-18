@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { TouchableOpacity, Text, KeyboardAvoidingView, StyleSheet, ScrollView, Image, View } from 'react-native';
+import { TouchableOpacity, Text, KeyboardAvoidingView, StyleSheet, ScrollView, Image, View, Alert } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { TextInputMask } from 'react-native-masked-text';
 import api from '../services/api';
+import Loader from '../components/Loader';
 
 export default function Negocio() {
-    const [quantidade, setQuantidade] = useState();
 
-    const [vendedor, setVendedor] = useState([{ nome: 'Acacio' }]);
-
+    const [loading, setLoading] = useState(false);
+    const [quantidade, setQuantidade] = useState('');
+    const [vendedor, setVendedor] = useState([{ nome: 'Elton Alex Silva' }]);
     const [preco, setPreco] = useState(0);
-
-    const [nomeProduto, setNomeProduto] = useState();
-    const [descricaoProduto, setDescricaoPreco] = useState();
-
     const [vendas, setVendas] = useState();
     const [venda, setVenda] = useState();
-
-    const dadosVenda = {};
 
     const placeholder = {
         label: 'Selecione um produto',
@@ -30,24 +25,59 @@ export default function Negocio() {
         setVendas([v]);
     }, [preco, venda, quantidade])
 
-    async function salvarDadosVendedor() {
-        const body = {
-            vendedor,
-            vendas
-        }
-        alert(JSON.stringify(body))
-        // const response = await api.post('/vendedor', body);
+    function validarCamposInvalidos() {
+        return !venda || venda == 'undefined' || venda['descricao'] == null || preco == '0,00' || preco == 0 || quantidade === '';
     }
 
     function populaVendas(value, index) {
         setVenda({
-            nome: index,
+            nome: 'Produto ' + index,
             descricao: value,
         });
     }
 
+    async function salvarDadosVendedor() {
+
+        if (validarCamposInvalidos()) {
+            alerta('Todos os campos são obrigatórios!');
+            return;
+        }
+
+        const body = {
+            vendedor,
+            vendas
+        }
+        setLoading(true);
+        // await api.post('/vendedor', body)
+        //     .then(() => {
+        //         setLoading(false);
+        //         setVenda('');
+        //         setPreco(0);
+        //         setQuantidade('');
+        //         alerta('Cadastro Realizado com Sucesso!');
+        //     })
+        //     .catch(() => {
+        //         setLoading(false);
+        //     });
+        setLoading(false);
+    }
+
+    function alerta(msg) {
+        Alert.alert(
+            'Aviso!',
+            msg,
+            [
+                {
+                    text: 'OK'
+                },
+            ],
+            { cancelable: false }
+        );
+    }
+
     return (
         <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={78}>
+            <Loader loading={loading} />
             <ScrollView style={styles.form}>
                 <View style={styles.dadosNegocio}>
                     <Text style={styles.textoDadosNegocio}>Nome negócio</Text>
