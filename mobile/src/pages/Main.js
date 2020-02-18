@@ -28,13 +28,13 @@ export default function Main({ navigation }) {
                 onPress={() => {
                     navigation.navigate('Negocio')
                 }}>
-                <Text style={styles.textoMenuNegocio}>Negócio</Text>
+                <Text style={styles.textoMenuNegocio}>Negócios</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btMenuFinanceiro}
                 onPress={() => {
                     navigation.navigate('Financeiro')
                 }}>
-                <Text style={styles.textoMenuFinanceiro}>Financeiro</Text>
+                <Text style={styles.textoMenuFinanceiro}>Conteúdo SEBRAE</Text>
             </TouchableOpacity>
             <Carousel
                 align='center'
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#FFF',
         fontWeight: 'bold',
+        paddingTop: 10,
     },
 
     logoDadosNegocio: {

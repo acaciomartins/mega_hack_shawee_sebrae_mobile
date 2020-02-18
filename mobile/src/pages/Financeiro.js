@@ -7,8 +7,8 @@ export default function Financeiro({ navigation }) {
         { 'label': 'Cartilhas', 'uri': 'https://m.sebrae.com.br/sites/PortalSebrae/ufs/pi/sebraeaz/cartilhas,e30aa8ce76801510VgnVCM1000004c00210aRCRD', 'backgroundColor': '#53cf5a' },
         { 'label': 'Cursos Online', 'uri': 'https://www.sebrae.com.br/sites/PortalSebrae/cursosonline', 'backgroundColor': '#253168' },
         { 'label': 'Manuais', 'uri': 'https://www.sebrae.com.br/sites/PortalSebrae/ufs/sp/transparencia/normas-e-manuais,b9f760dadee17510VgnVCM1000004c00210aRCRD', 'backgroundColor': '#2e7409' },
-        { 'label': 'Treinamentos', 'uri': 'https://www.sebrae.com.br/sites/PortalSebrae/artigos/treinamentos-sao-essenciais-para-manter-a-qualidade-da-franquia,4bdb39407feb3410VgnVCM1000003b74010aRCRD', 'backgroundColor': '#253168' },
-        { 'label': 'Fale Conosco', 'uri': 'https://www.sebrae.com.br/sites/PortalSebrae/faleconosco', 'backgroundColor': '#667efb' },
+        { 'label': 'Treinamentos', 'uri': 'https://www.sebrae.com.br/sites/PortalSebrae/artigos/treinamentos-sao-essenciais-para-manter-a-qualidade-da-franquia,4bdb39407feb3410VgnVCM1000003b74010aRCRD', 'backgroundColor': '#ff5722' },
+        { 'label': 'Fale Conosco', 'uri': 'https://www.sebrae.com.br/sites/PortalSebrae/faleconosco', 'backgroundColor': '#03a9f4' },
     ]);
 
     function style_menu(negocio) {

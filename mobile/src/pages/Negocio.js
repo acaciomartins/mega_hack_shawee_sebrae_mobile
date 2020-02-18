@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { TouchableOpacity, Text, KeyboardAvoidingView, StyleSheet, ScrollView, Image, View } from 'react-native';
+import { TouchableOpacity, Text, KeyboardAvoidingView, SafeAreaView, StyleSheet, ScrollView, Image, View, Alert } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { TextInputMask } from 'react-native-masked-text';
 import api from '../services/api';
+import Loader from '../components/Loader';
 
 export default function Negocio() {
-    const [quantidade, setQuantidade] = useState();
 
-    const [vendedor, setVendedor] = useState([{ nome: 'Acacio' }]);
-
+    const [loading, setLoading] = useState(false);
+    const [quantidade, setQuantidade] = useState('');
+    const [vendedor, setVendedor] = useState([{ nome: 'Elton Alex Silva' }]);
     const [preco, setPreco] = useState(0);
-
-    const [nomeProduto, setNomeProduto] = useState();
-    const [descricaoProduto, setDescricaoPreco] = useState();
-
-    const [vendas, setVendas] = useState();
     const [venda, setVenda] = useState();
-
-    const dadosVenda = {};
+    const [item, setItem] = useState([]);
+    const [itemVenda, setItemVenda] = useState([]);
 
     const placeholder = {
         label: 'Selecione um produto',
@@ -27,27 +23,78 @@ export default function Negocio() {
 
     useEffect(() => {
         const v = { ...venda, preco, quantidade }
-        setVendas([v]);
+        setItem(v)
     }, [preco, venda, quantidade])
-
-    async function salvarDadosVendedor() {
-        const body = {
-            vendedor,
-            vendas
-        }
-        alert(JSON.stringify(body))
-        // const response = await api.post('/vendedor', body);
-    }
 
     function populaVendas(value, index) {
         setVenda({
-            nome: index,
+            nome: 'Produto ' + index,
             descricao: value,
         });
     }
 
+    function adicionarVendas() {
+        if (validarCamposInvalidos()) {
+            alerta('Todos os campos são obrigatórios!');
+            return;
+        }
+        let itemLista = itemVenda ? itemVenda : [];
+        itemLista.push(Object.assign({}, item));
+        setItemVenda(itemLista);
+        alerta('Item adicionado com Sucesso!');
+        limpaCampos();
+    }
+
+    async function salvarDadosVendedor() {
+        if (itemVenda.length == 0) {
+            alerta('Você deve adicionar pelo menos 1 item!');
+            return;
+        }
+        const body = {
+            vendedor,
+            vendas: itemVenda
+        }
+        setLoading(true);
+        await api.post('/vendedor', body)
+            .then(() => {
+                setLoading(false);
+                limpaCampos();
+                setItemVenda([]);
+                alerta('Cadastro Realizado com Sucesso!');
+            })
+            .catch(() => {
+                setLoading(false);
+            });
+        setLoading(false);
+    }
+
+    function limpaCampos() {
+        setVenda('');
+        setPreco(0);
+        setQuantidade('');
+    }
+
+    function validarCamposInvalidos() {
+        return !venda || venda == 'undefined' || venda['descricao'] == null || preco == '0,00' || preco == 0 || quantidade === '';
+    }
+
+
+    function alerta(msg) {
+        Alert.alert(
+            'Aviso!',
+            msg,
+            [
+                {
+                    text: 'OK'
+                },
+            ],
+            { cancelable: false }
+        );
+    }
+
     return (
         <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={78}>
+            <Loader loading={loading} />
             <ScrollView style={styles.form}>
                 <View style={styles.dadosNegocio}>
                     <Text style={styles.textoDadosNegocio}>Nome negócio</Text>
@@ -98,11 +145,37 @@ export default function Negocio() {
                     value={preco}
                     onChangeText={setPreco}
                 />
-                <TouchableOpacity style={styles.button} onPress={salvarDadosVendedor}>
-                    <Text style={styles.buttonText}>Adicionar</Text>
+                <TouchableOpacity style={styles.button} onPress={adicionarVendas}>
+                    <Text style={styles.buttonText}>Adicionar item</Text>
+                </TouchableOpacity>
+                <Text style={[{ fontSize: 13, textAlign: 'center', margin: 4 }]}>Items Adicinoados</Text>
+                {
+                    itemVenda.length > 0 ? (
+                        <View style={styles.tabela} >
+                            <Text style={[styles.tabelaTexto, { width: 70, backgroundColor: '#c0c0c0' }]}>Nome</Text>
+                            <Text style={[styles.tabelaTexto, { width: 120, backgroundColor: '#c0c0c0' }]}>Descricao</Text>
+                            <Text style={[styles.tabelaTexto, { width: 80, backgroundColor: '#c0c0c0' }]}>Qtd</Text>
+                            <Text style={[styles.tabelaTexto, { width: 70, backgroundColor: '#c0c0c0' }]}>Preco</Text>
+                        </View>
+                    ) :
+                        <Text style={[{ fontSize: 10, textAlign: 'center', }]}>Não há itens adicinoados</Text>
+                }
+                {
+                    itemVenda && itemVenda.map(item => (
+                        <View style={styles.tabela}>
+                            <Text style={[styles.tabelaTexto, { width: 70 }]}>{item.nome}</Text>
+                            <Text style={[styles.tabelaTexto, { width: 120 }]}>{item.descricao}</Text>
+                            <Text style={[styles.tabelaTexto, { width: 80 }]}>{item.quantidade}</Text>
+                            <Text style={[styles.tabelaTexto, { width: 70 }]}>{item.preco}</Text>
+                        </View>
+                    ))
+                }
+
+                <TouchableOpacity style={[styles.button, { marginTop: 15, marginBottom: 35, backgroundColor: 'blue' }]} onPress={salvarDadosVendedor}>
+                    <Text style={styles.buttonText}>Salvar</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     )
 }
 
@@ -171,6 +244,19 @@ const styles = StyleSheet.create({
             width: 4,
             height: 4,
         },
+    },
+
+    tabela: {
+        flex: 1,
+        flexWrap: 'nowrap',
+        flexDirection: 'row',
+
+
+    },
+
+    tabelaTexto: {
+        padding: 0,
+        fontSize: 10,
     },
 
     dadosNegocio: {
